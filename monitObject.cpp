@@ -1,6 +1,3 @@
-#ifndef ___monitObject___
-#define ___monitObject___
-
 #include "monitObject.h"
 
 void monitObject::checkAllConditions()
@@ -35,6 +32,3 @@ bool monitObject::runProcess()
 {
 
 }
-
-
-#endif /*___monitObject___*/

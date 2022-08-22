@@ -1,0 +1,16 @@
+{
+  "config": [{
+    "ObjName" : "name_1",
+    "RunProcess" : "app_path",
+    "RunArvg" : "arguments",
+    "Semaphore" : "simple.sem",
+    "TestFrequency" : 60
+  }, {
+    "ObjName" : "name_2",
+    "RunProcess" : "app_path_2",
+    "RunArvg" : "arguments_2",
+    "Semaphore" : "simple.sem_2",
+    "TestFrequency" : 120
+  }]
+
+}

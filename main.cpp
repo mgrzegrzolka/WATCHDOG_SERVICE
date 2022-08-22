@@ -1,7 +1,9 @@
+#include <iostream>
 #include <windows.h>
 #include <cstdio>
 #include <tlhelp32.h>
 #include <codecvt>
+#include "objParams.h"
 
 SERVICE_STATUS_HANDLE g_hStatus;
 SERVICE_STATUS g_Status;
@@ -79,12 +81,14 @@ int main( int argc, char * argv[ ] )
     //    { NULL, NULL }
     //};
     //StartServiceCtrlDispatcher( svc );
+    objParams params;
     const wchar_t pName[] = L"Code.exe";
 
     if (IsProcessRunning(pName)) {
-        printf("Exist");
+        printf("Exist\n");
     } else {
-        printf("Not exist");
+        printf("Not exist\n");
     }
+    
     return 0;
 }

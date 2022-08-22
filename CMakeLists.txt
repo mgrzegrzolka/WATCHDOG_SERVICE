@@ -18,8 +18,11 @@ include_directories(externals)
 #common part od source code
 set(WATCHDOG_SERVICE_src
         main.cpp
-        monitObject.h
-        monitObject.cpp
+        externals/json.hpp
+        #monitObject.h
+        #monitObject.cpp
+        objParams.h
+        objParams.cpp
 )
 
 add_executable(${PROJECT_NAME} ${WATCHDOG_SERVICE_src})
