@@ -9,18 +9,21 @@
 class objParams
 {
 public:
-    objParams() { readConfig(); }
+    objParams() : noof(0) { readConfig(); }
     ~objParams() {}
     bool readConfig();
     bool reloadConfig();
     std::string getObjName(int id);
+    std::string getMonitProcess(int id);
     std::string getRunProcess(int id);
     std::string getRunArvg(int id);
     std::string getSemaphore(int id);
     int getTestFrequency(int id);
+    int getNoofObjects();
 private:
-    std::vector<std::string> objName, runProcess, runArvg, semaphore;
+    std::vector<std::string> objName, monitProcess, runProcess, runArvg, semaphore;
     std::vector<int> testFrequency;
+    int noof;
     nlohmann::json config;
 };
 

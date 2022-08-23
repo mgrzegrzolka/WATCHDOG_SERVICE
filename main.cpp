@@ -3,7 +3,9 @@
 #include <cstdio>
 #include <tlhelp32.h>
 #include <codecvt>
+#include <vector>
 #include "objParams.h"
+#include "monitObject.h"
 
 SERVICE_STATUS_HANDLE g_hStatus;
 SERVICE_STATUS g_Status;
@@ -40,7 +42,7 @@ VOID CALLBACK ServiceMain( DWORD dwArgc, LPTSTR * lpszArgv )
     g_hStatus = RegisterServiceCtrlHandlerEx( "TestService", SvcHandlerEx, 0 );
     SetServiceStatus( g_hStatus, & g_Status );
 }
-
+/*
 wchar_t *convertCharWchar_t(char *c) 
 {
     const size_t cSize = strlen(c)+1;
@@ -72,7 +74,7 @@ bool IsProcessRunning(const wchar_t *processName)
     CloseHandle(snapshot);
     return exists;
 }
-
+*/
 int main( int argc, char * argv[ ] )
 {
     //SERVICE_TABLE_ENTRY svc[ ] =
@@ -81,14 +83,31 @@ int main( int argc, char * argv[ ] )
     //    { NULL, NULL }
     //};
     //StartServiceCtrlDispatcher( svc );
-    objParams params;
     const wchar_t pName[] = L"Code.exe";
+    objParams *params = new objParams;
+    std::vector<monitObject*> mObjects;
+    for(int i = 0; i < params->getNoofObjects(); i++) {
+        std::cout << "NOOF:" << i << "\n";
+        mObjects.push_back(new monitObject(params, i));
+    }
 
+    do {
+        for(monitObject* ob : mObjects) {
+            if(ob->isProcessRunning()) {
+                printf("Exist\n");
+            } else {
+                printf("Not exist\n");
+            }
+        }
+    } while(true);
+
+
+/*
     if (IsProcessRunning(pName)) {
         printf("Exist\n");
     } else {
         printf("Not exist\n");
     }
-    
+*/
     return 0;
 }

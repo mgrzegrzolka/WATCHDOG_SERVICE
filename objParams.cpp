@@ -15,6 +15,8 @@ bool objParams::readConfig()
         runArvg.push_back(el["RunArvg"].get<std::string>());
         semaphore.push_back(el["Semaphore"].get<std::string>());
         testFrequency.push_back(el["TestFrequency"].get<int>());
+        monitProcess.push_back(el["MonitProcess"].get<std::string>());
+        noof++;
     }
     
     return true;
@@ -27,6 +29,11 @@ bool objParams::reloadConfig()
 std::string objParams::getObjName(int id)
 {
     return objName[id];
+}
+
+std::string objParams::getMonitProcess(int id)
+{
+    return monitProcess[id];
 }
 
 std::string objParams::getRunProcess(int id)
@@ -48,3 +55,8 @@ int objParams::getTestFrequency(int id)
 {
     return testFrequency[id];
 }
+
+ int objParams::getNoofObjects()
+ {
+    return noof;
+ }

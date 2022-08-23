@@ -19,8 +19,8 @@ include_directories(externals)
 set(WATCHDOG_SERVICE_src
         main.cpp
         externals/json.hpp
-        #monitObject.h
-        #monitObject.cpp
+        monitObject.h
+        monitObject.cpp
         objParams.h
         objParams.cpp
 )

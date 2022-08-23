@@ -13,15 +13,23 @@
 class monitObject
 {
 public:
-    monitObject(objParams *pObjects) {}
+    monitObject(objParams *pObjects, int p_id);
     ~monitObject() {}
     void checkAllConditions();
-    bool isProcessRunning(const wchar_t *processName);
-    bool runProcess();
+    bool isProcessRunning();
+    bool startProcess();
 
+    static wchar_t *monitObject::convertCharWchar_t(char *c) 
+    {
+        const size_t cSize = strlen(c)+1;
+        wchar_t* wc = new wchar_t[cSize];
+        mbstowcs(wc, c, cSize);
+
+        return wc;
+    }
 private:
-    std::string monitProcess, runProcess, argv;
-    int testFrequency, state;
+    std::string objName, monitProcess, runProcess, argv, semaphore;
+    int testFrequency, state, id;
 };
 
 #endif /* ___monitObject___ */
