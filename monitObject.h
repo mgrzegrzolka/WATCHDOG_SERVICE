@@ -1,6 +1,7 @@
 #ifndef ___monitObject___
 #define ___monitObject___
 
+#include <iostream>
 #include <string>
 #include <chrono>
 #include <ctime>  
@@ -8,6 +9,10 @@
 #include <cstdio>
 #include <tlhelp32.h>
 #include <codecvt>
+#include <chrono>
+#include <ctime>
+#include <fstream>
+
 #include "objParams.h"
 
 class monitObject
@@ -15,9 +20,10 @@ class monitObject
 public:
     monitObject(objParams *pObjects, int p_id);
     ~monitObject() {}
-    void checkAllConditions();
+    bool checkAllConditions();
     bool isProcessRunning();
     bool startProcess();
+    void doAction();
 
     static wchar_t *monitObject::convertCharWchar_t(char *c) 
     {
@@ -29,7 +35,9 @@ public:
     }
 private:
     std::string objName, monitProcess, runProcess, argv, semaphore;
-    int testFrequency, state, id;
+    int state, id, monitProcessState;
+    double testFrequency;
+    std::chrono::system_clock::time_point lastTest;
 };
 
 #endif /* ___monitObject___ */

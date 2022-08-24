@@ -1,6 +1,6 @@
 #include "monitObject.h"
 
-monitObject::monitObject(objParams *pObjects, int p_id) : id(p_id), state(0)
+monitObject::monitObject(objParams *pObjects, int p_id) : id(p_id), state(0), monitProcessState(0)
 {
     objName = pObjects->getObjName(p_id);
     monitProcess = pObjects->getMonitProcess(p_id);
@@ -8,11 +8,21 @@ monitObject::monitObject(objParams *pObjects, int p_id) : id(p_id), state(0)
     argv = pObjects->getRunArvg(p_id);
     testFrequency = pObjects->getTestFrequency(p_id);
     semaphore = pObjects->getSemaphore(p_id);
+    lastTest = std::chrono::system_clock::now();
 }
 
-void monitObject::checkAllConditions()
+bool monitObject::checkAllConditions()
 {
+    std::chrono::system_clock::time_point controlTime = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = controlTime-lastTest;
+    if(elapsed_seconds.count() > testFrequency) {
+        
+        if(isProcessRunning()) monitProcessState = 1;
 
+        lastTest = std::chrono::system_clock::now();
+        return true;
+    }
+    return false;
 }
 
 bool monitObject::isProcessRunning()
@@ -38,10 +48,25 @@ bool monitObject::isProcessRunning()
     }
 
     CloseHandle(snapshot);
+
     return exists;
 }
 
 bool monitObject::startProcess()
 {
     return true;
+}
+
+void monitObject::doAction()
+{
+    if(!monitProcessState) {
+        std::ifstream infile(runProcess);
+        if(infile.good()) {
+            std::cout << "Run file exist !!!" << "\n";
+        } else {
+            std::cout << "Run file not exist !!!" << "\n";
+        }
+
+    }
+                //system("C:\\Program Files\\Program.exe");
 }

@@ -5,14 +5,14 @@
     "RunProcess" : "app_path",
     "RunArvg" : "arguments",
     "Semaphore" : "simple.sem",
-    "TestFrequency" : 60
+    "TestFrequency" : 10
   }, {
     "ObjName" : "name_2",
     "MonitProcess" : "Code2.exe",
-    "RunProcess" : "app_path_2",
+    "RunProcess" : "C:\\Users\\mgrze\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
     "RunArvg" : "arguments_2",
     "Semaphore" : "simple.sem_2",
-    "TestFrequency" : 120
+    "TestFrequency" : 60
   }]
 
 }

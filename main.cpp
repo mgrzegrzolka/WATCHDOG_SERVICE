@@ -42,39 +42,7 @@ VOID CALLBACK ServiceMain( DWORD dwArgc, LPTSTR * lpszArgv )
     g_hStatus = RegisterServiceCtrlHandlerEx( "TestService", SvcHandlerEx, 0 );
     SetServiceStatus( g_hStatus, & g_Status );
 }
-/*
-wchar_t *convertCharWchar_t(char *c) 
-{
-    const size_t cSize = strlen(c)+1;
-    wchar_t* wc = new wchar_t[cSize];
-    mbstowcs(wc, c, cSize);
 
-    return wc;
-}
-
-bool IsProcessRunning(const wchar_t *processName)
-{
-    bool exists = false;
-    PROCESSENTRY32 entry;
-    entry.dwSize = sizeof(PROCESSENTRY32);
-
-    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-    wchar_t *pName = 0;
-    if (Process32First(snapshot, &entry)) {
-        while (Process32Next(snapshot, &entry)) {
-            pName = convertCharWchar_t(entry.szExeFile);
-            if (!wcsicmp(pName, processName)) {
-                exists = true;
-            }
-            delete[] pName;
-            pName = 0;
-        }
-    }
-
-    CloseHandle(snapshot);
-    return exists;
-}
-*/
 int main( int argc, char * argv[ ] )
 {
     //SERVICE_TABLE_ENTRY svc[ ] =
@@ -93,10 +61,8 @@ int main( int argc, char * argv[ ] )
 
     do {
         for(monitObject* ob : mObjects) {
-            if(ob->isProcessRunning()) {
-                printf("Exist\n");
-            } else {
-                printf("Not exist\n");
+            if(ob->checkAllConditions()) {
+                ob->doAction();
             }
         }
     } while(true);
