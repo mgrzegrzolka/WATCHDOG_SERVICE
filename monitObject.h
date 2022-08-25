@@ -21,7 +21,7 @@ public:
     monitObject(objParams *pObjects, int p_id);
     ~monitObject() {}
     bool checkAllConditions();
-    bool isProcessRunning();
+    bool isProcessRunning(std::string m_monitProcess);
     bool startProcess();
     void doAction();
 
@@ -34,8 +34,8 @@ public:
         return wc;
     }
 private:
-    std::string objName, monitProcess, runProcess, argv, semaphore;
-    int state, id, monitProcessState;
+    std::string objName, monitProcess, relatedProcess, runProcess, argv, semaphore;
+    int state, id, monitProcessState, relatedProcessState;
     double testFrequency;
     std::chrono::system_clock::time_point lastTest;
 };

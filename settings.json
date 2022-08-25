@@ -2,17 +2,19 @@
   "config": [{
     "ObjName" : "name_1",
     "MonitProcess" : "Code.exe",
+    "RelatedProcess" : "blrlr",
     "RunProcess" : "app_path",
     "RunArvg" : "arguments",
     "Semaphore" : "simple.sem",
-    "TestFrequency" : 10
+    "TestFrequency" : 20
   }, {
     "ObjName" : "name_2",
     "MonitProcess" : "Code2.exe",
-    "RunProcess" : "C:\\Users\\mgrze\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+    "RelatedProcess" : "Code.exe",
+    "RunProcess" : "F:\\putty gen\\puttygen.exe",
     "RunArvg" : "arguments_2",
     "Semaphore" : "simple.sem_2",
-    "TestFrequency" : 60
+    "TestFrequency" : 10
   }]
 
 }

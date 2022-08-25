@@ -65,6 +65,7 @@ int main( int argc, char * argv[ ] )
                 ob->doAction();
             }
         }
+        Sleep(100);
     } while(true);
 
 
