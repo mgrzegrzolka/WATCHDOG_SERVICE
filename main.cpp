@@ -6,51 +6,183 @@
 #include <vector>
 #include "objParams.h"
 #include "monitObject.h"
+#include <tchar.h>
 
-SERVICE_STATUS_HANDLE g_hStatus;
-SERVICE_STATUS g_Status;
+#define SERVICE_NAME "watchdog"
 
-DWORD CALLBACK SvcHandlerEx( DWORD dwControl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext )
+SERVICE_STATUS_HANDLE g_StatusHandle = NULL;
+SERVICE_STATUS g_ServiceStatus = {0};
+HANDLE  g_ServiceStopEvent = INVALID_HANDLE_VALUE;
+
+VOID WINAPI ServiceMain (DWORD argc, LPTSTR *argv);
+VOID WINAPI ServiceCtrlHandler (DWORD);
+DWORD WINAPI ServiceWorkerThread (LPVOID lpParam);
+
+objParams *params;
+std::vector<monitObject*> mObjects;
+
+VOID WINAPI ServiceMain (DWORD argc, LPTSTR *argv)
 {
-    switch( dwControl )
+    DWORD Status = E_FAIL;
+ 
+    // Register our service control handler with the SCM
+    g_StatusHandle = RegisterServiceCtrlHandler (SERVICE_NAME, ServiceCtrlHandler);
+ 
+    if (g_StatusHandle == NULL) 
     {
-    case SERVICE_CONTROL_PAUSE:
-        g_Status.dwCurrentState = SERVICE_PAUSED;
-        break;
-    case SERVICE_CONTROL_CONTINUE:
-        g_Status.dwCurrentState = SERVICE_RUNNING;
-        break;
-    case SERVICE_CONTROL_STOP:
-    case SERVICE_CONTROL_SHUTDOWN:
-        g_Status.dwCurrentState = SERVICE_STOPPED;
-        break;
+        goto EXIT;
     }
-    SetServiceStatus( g_hStatus, & g_Status );
-    return NO_ERROR;
-}
+ 
+    // Tell the service controller we are starting
+    ZeroMemory (&g_ServiceStatus, sizeof (g_ServiceStatus));
+    g_ServiceStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
+    g_ServiceStatus.dwControlsAccepted = 0;
+    g_ServiceStatus.dwCurrentState = SERVICE_START_PENDING;
+    g_ServiceStatus.dwWin32ExitCode = 0;
+    g_ServiceStatus.dwServiceSpecificExitCode = 0;
+    g_ServiceStatus.dwCheckPoint = 0;
+ 
+    if (SetServiceStatus (g_StatusHandle , &g_ServiceStatus) == FALSE)
+    {
+        OutputDebugString(_T(
+          "My Sample Service: ServiceMain: SetServiceStatus returned error"));
+    }
+ 
+    /*
+     * Perform tasks necessary to start the service here
+     */
+    params = new objParams;
+    for(int i = 0; i < params->getNoofObjects(); i++) {
+        std::cout << "NOOF:" << i << "\n";
+        mObjects.push_back(new monitObject(params, i));
+    }
+ 
+    // Create a service stop event to wait on later
+    g_ServiceStopEvent = CreateEvent (NULL, TRUE, FALSE, NULL);
+    if (g_ServiceStopEvent == NULL) 
+    {   
+        // Error creating event
+        // Tell service controller we are stopped and exit
+        g_ServiceStatus.dwControlsAccepted = 0;
+        g_ServiceStatus.dwCurrentState = SERVICE_STOPPED;
+        g_ServiceStatus.dwWin32ExitCode = GetLastError();
+        g_ServiceStatus.dwCheckPoint = 1;
+ 
+        if (SetServiceStatus (g_StatusHandle, &g_ServiceStatus) == FALSE)
+	{
+	    OutputDebugString(_T(
+	      "My Sample Service: ServiceMain: SetServiceStatus returned error"));
+	}
+        goto EXIT; 
+    }    
+    
+    // Tell the service controller we are started
+    g_ServiceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP;
+    g_ServiceStatus.dwCurrentState = SERVICE_RUNNING;
+    g_ServiceStatus.dwWin32ExitCode = 0;
+    g_ServiceStatus.dwCheckPoint = 0;
+ 
+    if (SetServiceStatus (g_StatusHandle, &g_ServiceStatus) == FALSE)
+    {
+        OutputDebugString(_T(
+          "My Sample Service: ServiceMain: SetServiceStatus returned error"));
+    }
+ 
+    // Start a thread that will perform the main task of the service
+    HANDLE hThread = CreateThread (NULL, 0, ServiceWorkerThread, NULL, 0, NULL);
+   
+    // Wait until our worker thread exits signaling that the service needs to stop
+    WaitForSingleObject (hThread, INFINITE);
+   
+    
+    /*
+     * Perform any cleanup tasks 
+     */
+ 
+    CloseHandle (g_ServiceStopEvent);
+ 
+    // Tell the service controller we are stopped
+    g_ServiceStatus.dwControlsAccepted = 0;
+    g_ServiceStatus.dwCurrentState = SERVICE_STOPPED;
+    g_ServiceStatus.dwWin32ExitCode = 0;
+    g_ServiceStatus.dwCheckPoint = 3;
+ 
+    if (SetServiceStatus (g_StatusHandle, &g_ServiceStatus) == FALSE)
+    {
+        OutputDebugString(_T(
+          "My Sample Service: ServiceMain: SetServiceStatus returned error"));
+    }
+    
+EXIT:
+    return;
+} 
 
-VOID CALLBACK ServiceMain( DWORD dwArgc, LPTSTR * lpszArgv )
+VOID WINAPI ServiceCtrlHandler (DWORD CtrlCode)
 {
-    g_Status.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
-    g_Status.dwCurrentState = SERVICE_RUNNING;
-    g_Status.dwControlsAccepted = SERVICE_ACCEPT_PAUSE_CONTINUE | SERVICE_ACCEPT_STOP |
-    SERVICE_ACCEPT_SHUTDOWN;
-    g_Status.dwWin32ExitCode = NO_ERROR;
-    g_Status.dwServiceSpecificExitCode = 0;
-    g_Status.dwCheckPoint = 0;
-    g_Status.dwWaitHint = 0;
-    g_hStatus = RegisterServiceCtrlHandlerEx( "TestService", SvcHandlerEx, 0 );
-    SetServiceStatus( g_hStatus, & g_Status );
-}
+    switch (CtrlCode) 
+	{
+     case SERVICE_CONTROL_STOP :
+ 
+        if (g_ServiceStatus.dwCurrentState != SERVICE_RUNNING)
+           break;
+ 
+        /* 
+         * Perform tasks necessary to stop the service here 
+         */
+        
+        g_ServiceStatus.dwControlsAccepted = 0;
+        g_ServiceStatus.dwCurrentState = SERVICE_STOP_PENDING;
+        g_ServiceStatus.dwWin32ExitCode = 0;
+        g_ServiceStatus.dwCheckPoint = 4;
+ 
+        if (SetServiceStatus (g_StatusHandle, &g_ServiceStatus) == FALSE)
+        {
+            OutputDebugString(_T(
+              "My Sample Service: ServiceCtrlHandler: SetServiceStatus returned error"));
+        }
+ 
+        // This will signal the worker thread to start shutting down
+        SetEvent (g_ServiceStopEvent);
+ 
+        break;
+ 
+     default:
+         break;
+    }
+}  
+
+DWORD WINAPI ServiceWorkerThread (LPVOID lpParam)
+{
+    //  Periodically check if the service has been requested to stop
+    while (WaitForSingleObject(g_ServiceStopEvent, 0) != WAIT_OBJECT_0)
+    {        
+        for(monitObject* ob : mObjects) {
+            if(ob->checkAllConditions()) {
+                ob->doAction();
+            }
+        }
+        //  Simulate some work by sleeping
+        Sleep(200);
+    }
+ 
+    return ERROR_SUCCESS;
+} 
 
 int main( int argc, char * argv[ ] )
 {
-    //SERVICE_TABLE_ENTRY svc[ ] =
-    //{
-    //    { "TestService", ServiceMain },
-    //    { NULL, NULL }
-    //};
-    //StartServiceCtrlDispatcher( svc );
+    SERVICE_TABLE_ENTRY ServiceTable[] = 
+    {
+        {SERVICE_NAME, ServiceMain},
+        {NULL, NULL}
+    };
+ 
+    if (StartServiceCtrlDispatcher (ServiceTable) == FALSE)
+    {
+        return GetLastError ();
+    }
+ 
+    return 0;
+/*
     const wchar_t pName[] = L"Code.exe";
     objParams *params = new objParams;
     std::vector<monitObject*> mObjects;
@@ -67,14 +199,6 @@ int main( int argc, char * argv[ ] )
         }
         Sleep(100);
     } while(true);
-
-
-/*
-    if (IsProcessRunning(pName)) {
-        printf("Exist\n");
-    } else {
-        printf("Not exist\n");
-    }
 */
-    return 0;
+    //return 0;
 }
