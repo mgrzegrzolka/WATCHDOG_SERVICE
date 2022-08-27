@@ -24,6 +24,7 @@ public:
     bool isProcessRunning(std::string m_monitProcess);
     bool startProcess();
     void doAction();
+    void startup(LPCSTR lpApplicationName);
 
     static wchar_t *monitObject::convertCharWchar_t(char *c) 
     {

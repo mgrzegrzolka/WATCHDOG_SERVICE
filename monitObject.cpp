@@ -63,16 +63,43 @@ bool monitObject::startProcess()
 
 void monitObject::doAction()
 {
-    char path[512] = "";
-    
     if(!monitProcessState && relatedProcessState) {
         std::ifstream infile(runProcess);
         if(infile.good()) {
             std::cout << "Run file exist. Start!!!" << "\n";
-            sprintf (path, "\"%s\"", runProcess.c_str());
-            system(path);
+            startup(runProcess.c_str());
         } else std::cout << "Run file not exist !!!" << "\n";
 
     }
-                //system("C:\\Program Files\\Program.exe");
+               
+}
+
+void monitObject::startup(LPCSTR lpApplicationName)
+{
+    // additional information
+    STARTUPINFOA si;
+    PROCESS_INFORMATION pi;
+
+    // set the size of the structures
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+
+    // start the program up
+    CreateProcessA
+    (
+        lpApplicationName,   // the path
+        "",                // Command line
+        NULL,                   // Process handle not inheritable
+        NULL,                   // Thread handle not inheritable
+        FALSE,                  // Set handle inheritance to FALSE
+        NULL,     // Opens file in a separate console
+        NULL,           // Use parent's environment block
+        NULL,           // Use parent's starting directory 
+        &si,            // Pointer to STARTUPINFO structure
+        &pi           // Pointer to PROCESS_INFORMATION structure
+    );
+        // Close process and thread handles. 
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
 }

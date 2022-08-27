@@ -3,7 +3,11 @@
 
 bool objParams::readConfig()
 {
+#ifdef DEBUG_MODE
     std::ifstream sFile("settings.json");
+#else
+    std::ifstream sFile("c:\\wd\\settings.json");
+#endif
     if(sFile) {
      printf("The configuration file has been loaded \n");
      config = nlohmann::json::parse(sFile);
