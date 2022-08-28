@@ -28,10 +28,8 @@ endif(WIN32)
 
 include_directories(externals)
 
-#common part od source code
 set(WATCHDOG_SERVICE_src
         main.cpp
-        externals/json.hpp
         monitObject.h
         monitObject.cpp
         objParams.h

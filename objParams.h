@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include "externals/json.hpp"
+#include <json.hpp>
 
 class objParams
 {
