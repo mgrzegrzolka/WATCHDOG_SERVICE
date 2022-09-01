@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <json.hpp>
+#include <spdlog/spdlog.h>
 
 class objParams
 {

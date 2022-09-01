@@ -19,10 +19,11 @@ bool monitObject::checkAllConditions()
     std::chrono::system_clock::time_point controlTime = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = controlTime-lastTest;
     if(elapsed_seconds.count() > testFrequency) {
-        
+        spdlog::get("wd_log")->info("[checkAllConditions] check each of conditions.");
         if(isProcessRunning(monitProcess)) monitProcessState = 1;
+        spdlog::get("wd_log")->info("   [checkAllConditions][monitProcess][{}]", monitProcessState);
         if(isProcessRunning(relatedProcess)) relatedProcessState = 1;
-
+        spdlog::get("wd_log")->info("   [checkAllConditions][relatedProcess][{}]", relatedProcess);
         lastTest = std::chrono::system_clock::now();
         return true;
     }
@@ -66,9 +67,9 @@ void monitObject::doAction()
     if(!monitProcessState && relatedProcessState) {
         std::ifstream infile(runProcess);
         if(infile.good()) {
-            std::cout << "Run file exist. Start!!!" << "\n";
+            spdlog::get("wd_log")->info("[runProcess] File exist. Start process.");
             startup(runProcess.c_str());
-        } else std::cout << "Run file not exist !!!" << "\n";
+        } else spdlog::get("wd_log")->error("[runProcess] File not exist!");
 
     }
                

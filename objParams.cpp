@@ -9,10 +9,10 @@ bool objParams::readConfig()
     std::ifstream sFile("c:\\wd\\settings.json");
 #endif
     if(sFile) {
-     printf("The configuration file has been loaded \n");
-     config = nlohmann::json::parse(sFile);
+        spdlog::get("wd_log")->info("The configuration file has been loaded.");
+        config = nlohmann::json::parse(sFile);
     } else return false;
-    
+    spdlog::get("wd_log")->info("Start reading configurations -------------------------------- ");
     for (nlohmann::json& el : config["config"]) {
         objName.push_back(el["ObjName"].get<std::string>());
         runProcess.push_back(el["RunProcess"].get<std::string>());
@@ -22,8 +22,13 @@ bool objParams::readConfig()
         monitProcess.push_back(el["MonitProcess"].get<std::string>());
         relatedProcess.push_back(el["RelatedProcess"].get<std::string>());
         noof++;
+        spdlog::get("wd_log")->info("   Object --------{}--------", objName.size());
+        spdlog::get("wd_log")->info("       [ObjName][{}] - [RunProcess][{}]", objName.back(), runProcess.back());
+        spdlog::get("wd_log")->info("       [runArvg][{}] - [semaphore][{}]", runArvg.back(), semaphore.back());
+        spdlog::get("wd_log")->info("       [monitProcess][{}]", monitProcess.back());
+        spdlog::get("wd_log")->info("       [relatedProcess][{}]", relatedProcess.back());
     }
-    
+    spdlog::get("wd_log")->info("Reading configurations completed -------------------------------- ");
     return true;
 }
 bool objParams::reloadConfig()

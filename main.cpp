@@ -21,14 +21,14 @@ int main( int argc, char * argv[ ] )
 #else
     sinks.push_back(std::make_shared<spdlog::sinks::rotating_file_sink_mt>("c:\\wd\\log\\wd_log.log", 1048576 * 5, 5));
 #endif
-    auto logger = std::make_shared<spdlog::logger>("wd_log", begin(sinks), end(sinks));
+    spdlog::register_logger( std::make_shared<spdlog::logger>("wd_log", begin(sinks), end(sinks)) );
     
     objParams *params = new objParams;
     std::vector<monitObject*> mObjects;
     for(int i = 0; i < params->getNoofObjects(); i++) {
         mObjects.push_back(new monitObject(params, i));
     }
-    logger->info("Number of monit objects: {}", mObjects.size());
+    spdlog::get("wd_log")->info("Number of monit objects: {}", mObjects.size());
 
     do {
         for(monitObject* ob : mObjects) {

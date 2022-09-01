@@ -12,6 +12,7 @@
 #include <chrono>
 #include <ctime>
 #include <fstream>
+#include <spdlog/spdlog.h>
 
 #include "objParams.h"
 
