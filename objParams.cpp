@@ -11,7 +11,10 @@ bool objParams::readConfig()
     if(sFile) {
         spdlog::get("wd_log")->info("The configuration file has been loaded.");
         config = nlohmann::json::parse(sFile);
-    } else return false;
+    } else { 
+        spdlog::get("wd_log")->error("Error to reading config file.");
+        return false;
+    }
     spdlog::get("wd_log")->info("Start reading configurations -------------------------------- ");
     for (nlohmann::json& el : config["config"]) {
         objName.push_back(el["ObjName"].get<std::string>());

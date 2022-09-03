@@ -82,6 +82,7 @@
         "xutility": "cpp",
         "valarray": "cpp",
         "charconv": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "bit": "cpp"
     }
 }

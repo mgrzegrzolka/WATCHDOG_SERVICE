@@ -17,7 +17,7 @@ bool monitObject::checkAllConditions()
     monitProcessState = 0;
     relatedProcessState = 0;
     std::chrono::system_clock::time_point controlTime = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = controlTime-lastTest;
+    std::chrono::duration<double> elapsed_seconds = controlTime - lastTest;
     if(elapsed_seconds.count() > testFrequency) {
         spdlog::get("wd_log")->info("[checkAllConditions] check each of conditions.");
         if(isProcessRunning(monitProcess)) monitProcessState = 1;

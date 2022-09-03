@@ -6,11 +6,27 @@
 #include <fstream>
 #include <json.hpp>
 #include <spdlog/spdlog.h>
+#include <chrono>
+#include <ctime>
+#include <iostream>
 
+#define READ_AGAIN_CONFIG_TIME 60
 class objParams
 {
 public:
-    objParams() : noof(0) { readConfig(); }
+    objParams() : noof(0)
+    { 
+        std::chrono::system_clock::time_point controlTime, lastTest;
+        while(1) {
+            std::chrono::system_clock::time_point controlTime = std::chrono::system_clock::now();
+            std::chrono::duration<double> elapsed_seconds = controlTime - lastTest;
+            if(elapsed_seconds.count() > READ_AGAIN_CONFIG_TIME) {
+                if(readConfig()) break;
+                lastTest = std::chrono::system_clock::now();
+            }
+            Sleep(100);
+        }
+    }
     ~objParams() {}
     bool readConfig();
     bool reloadConfig();
