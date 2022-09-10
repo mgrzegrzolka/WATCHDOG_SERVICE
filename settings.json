@@ -13,7 +13,7 @@
     "RelatedProcess" : "Code.exe",
     "RunProcess" : "F:\\putty gen\\puttygen.exe",
     "RunArvg" : [],
-    "Semaphore" : "simple.sem_2",
+    "Semaphore" : "",
     "TestFrequency" : 10
   }]
 

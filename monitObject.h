@@ -21,9 +21,10 @@ public:
     ~monitObject() {}
     bool checkAllConditions();
     bool isProcessRunning(std::string m_monitProcess);
+    bool isSemaphoreExist();
     bool startProcess();
     void doAction();
-    void startup(LPCSTR lpApplicationName, std::vector<std::string> argv);
+    void startupApp(LPCSTR lpApplicationName, std::vector<std::string> argv);
 
     static wchar_t *monitObject::convertCharWchar_t(char *c) 
     {
@@ -36,7 +37,7 @@ public:
 private:
     std::string objName, monitProcess, relatedProcess, runProcess, semaphore;
     std::vector<std::string> runArgv;
-    int state, id, monitProcessState, relatedProcessState;
+    int state, id, monitProcessState, relatedProcessState, semaphoreState;
     double testFrequency;
     std::chrono::system_clock::time_point lastTest;
 };

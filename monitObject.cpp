@@ -16,6 +16,7 @@ bool monitObject::checkAllConditions()
 {
     monitProcessState = 0;
     relatedProcessState = 0;
+    semaphoreState = 0;
     std::chrono::system_clock::time_point controlTime = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = controlTime - lastTest;
     if(elapsed_seconds.count() > testFrequency) {
@@ -24,6 +25,8 @@ bool monitObject::checkAllConditions()
         spdlog::get("wd_log")->info("   [checkAllConditions][monitProcess][{}]", monitProcessState);
         if(isProcessRunning(relatedProcess)) relatedProcessState = 1;
         spdlog::get("wd_log")->info("   [checkAllConditions][relatedProcess][{}]", relatedProcess);
+        if(isSemaphoreExist() || (!semaphore.length())) semaphoreState = 1;
+        spdlog::get("wd_log")->info("   [checkAllConditions][semaphoreState][{}][{}]", semaphoreState, ((!semaphore.length()) ? "No semaphore defined. Ignore this condition." : semaphore));
         lastTest = std::chrono::system_clock::now();
         return true;
     }
@@ -57,6 +60,11 @@ bool monitObject::isProcessRunning(std::string m_monitProcess)
     return exists;
 }
 
+bool monitObject::isSemaphoreExist() {
+    std::ifstream infile(semaphore);
+    return (infile.good()) ? true : false;
+}
+
 bool monitObject::startProcess()
 {
     return true;
@@ -64,18 +72,18 @@ bool monitObject::startProcess()
 
 void monitObject::doAction()
 {
-    if(!monitProcessState && relatedProcessState) {
+    if(!monitProcessState && relatedProcessState && semaphoreState) {
         std::ifstream infile(runProcess);
         if(infile.good()) {
             spdlog::get("wd_log")->info("[runProcess] File exist. Start process.");
-            startup(runProcess.c_str(), runArgv);
+            startupApp(runProcess.c_str(), runArgv);
         } else spdlog::get("wd_log")->error("[runProcess] File not exist!");
 
     }
                
 }
 
-void monitObject::startup(LPCSTR lpApplicationName, std::vector<std::string> argv)
+void monitObject::startupApp(LPCSTR lpApplicationName, std::vector<std::string> argv)
 {
     // additional information
     STARTUPINFOA si;
