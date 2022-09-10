@@ -6,7 +6,7 @@ monitObject::monitObject(objParams *pObjects, int p_id) : id(p_id), state(0), mo
     monitProcess = pObjects->getMonitProcess(p_id);
     relatedProcess = pObjects->getRelatedProcess(p_id);
     runProcess = pObjects->getRunProcess(p_id);
-    argv = pObjects->getRunArvg(p_id);
+    runArgv = pObjects->getRunArvg(p_id);
     testFrequency = pObjects->getTestFrequency(p_id);
     semaphore = pObjects->getSemaphore(p_id);
     lastTest = std::chrono::system_clock::now();
@@ -68,14 +68,14 @@ void monitObject::doAction()
         std::ifstream infile(runProcess);
         if(infile.good()) {
             spdlog::get("wd_log")->info("[runProcess] File exist. Start process.");
-            startup(runProcess.c_str());
+            startup(runProcess.c_str(), runArgv);
         } else spdlog::get("wd_log")->error("[runProcess] File not exist!");
 
     }
                
 }
 
-void monitObject::startup(LPCSTR lpApplicationName)
+void monitObject::startup(LPCSTR lpApplicationName, std::vector<std::string> argv)
 {
     // additional information
     STARTUPINFOA si;
