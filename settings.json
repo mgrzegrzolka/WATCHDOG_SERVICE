@@ -4,7 +4,7 @@
     "MonitProcess" : "Code.exe",
     "RelatedProcess" : "blrlr",
     "RunProcess" : "app_path",
-    "RunArvg" : [ "argument", "argument1", "argument2"],
+    "RunArvg" : [],
     "Semaphore" : "simple.sem",
     "TestFrequency" : 20
   }, {
@@ -12,7 +12,7 @@
     "MonitProcess" : "Code2.exe",
     "RelatedProcess" : "Code.exe",
     "RunProcess" : "F:\\putty gen\\puttygen.exe",
-    "RunArvg" : [ "argument", "argument1", "argument2"],
+    "RunArvg" : [],
     "Semaphore" : "simple.sem_2",
     "TestFrequency" : 10
   }]

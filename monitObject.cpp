@@ -80,7 +80,10 @@ void monitObject::startup(LPCSTR lpApplicationName, std::vector<std::string> arg
     // additional information
     STARTUPINFOA si;
     PROCESS_INFORMATION pi;
-
+    char l_argv[256] = "";
+    for(auto &a : argv) {
+        sprintf(l_argv, "%s %s", l_argv, a.c_str());
+    }
     // set the size of the structures
     ZeroMemory(&si, sizeof(si));
     si.cb = sizeof(si);
@@ -90,7 +93,7 @@ void monitObject::startup(LPCSTR lpApplicationName, std::vector<std::string> arg
     CreateProcessA
     (
         lpApplicationName,   // the path
-        "",                // Command line
+        l_argv,                // Command line
         NULL,                   // Process handle not inheritable
         NULL,                   // Thread handle not inheritable
         FALSE,                  // Set handle inheritance to FALSE

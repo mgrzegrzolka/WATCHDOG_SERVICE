@@ -10,7 +10,13 @@ bool objParams::readConfig()
 #endif
     if(sFile) {
         spdlog::get("wd_log")->info("The configuration file has been loaded.");
-        config = nlohmann::json::parse(sFile);
+        try {
+            config = nlohmann::json::parse(sFile);
+        }
+        catch (nlohmann::json::parse_error& ex) {
+            spdlog::get("wd_log")->error("Parse error at byte {}", ex.byte);
+            return false;
+        }
     } else { 
         spdlog::get("wd_log")->error("Error to reading config file.");
         return false;
