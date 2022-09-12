@@ -34,6 +34,7 @@ public:
     std::string getMonitProcess(int id);
     std::string getRelatedProcess(int id);
     std::string getSemaphore(int id);
+    std::vector<std::string> getSemaphoreParam(int id);
     std::string getRunProcess(int id);
     std::vector<std::string> getRunArvg(int id);
     int getTestFrequency(int id);

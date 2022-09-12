@@ -93,3 +93,19 @@ int objParams::getTestFrequency(int id)
  {
     return noof;
  }
+
+ std::vector<std::string> objParams::getSemaphoreParam(int id)
+ {
+    std::vector<std::string> param;
+    std::string line;
+    std::ifstream sFile(getSemaphore(id));
+
+    if (sFile.is_open()) {
+        while (getline(sFile, line)) {
+            if(line.find("@argv:") != std::string::npos) {
+                //std::cout << "\n";
+            }
+        }
+    }
+    return param;
+ }

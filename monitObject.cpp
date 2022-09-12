@@ -9,6 +9,7 @@ monitObject::monitObject(objParams *pObjects, int p_id) : id(p_id), state(0), mo
     runArgv = pObjects->getRunArvg(p_id);
     testFrequency = pObjects->getTestFrequency(p_id);
     semaphore = pObjects->getSemaphore(p_id);
+    pObjects->getSemaphoreParam(p_id);
     lastTest = std::chrono::system_clock::now();
 }
 
