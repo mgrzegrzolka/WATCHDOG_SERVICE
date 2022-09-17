@@ -24,7 +24,7 @@ bool monitObject::checkAllConditions()
     semaphoreState = 0;
     std::chrono::system_clock::time_point controlTime = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = controlTime - lastTest;
-    if(elapsed_seconds.count() > testFrequency) {
+    if((elapsed_seconds.count() > testFrequency) || objParams::getWdMode()) {
         spdlog::get("wd_log")->info("[checkAllConditions] check each of conditions.");
         if(isProcessRunning(monitProcess)) monitProcessState = 1;
         spdlog::get("wd_log")->info("   [checkAllConditions][monitProcess][{}]", monitProcessState);

@@ -1,6 +1,8 @@
 #include "objParams.h"
 #include <iostream>
 
+int objParams::wd_mode = 0;
+
 bool objParams::readConfig()
 {
 #ifdef DEBUG_MODE
@@ -93,11 +95,6 @@ int objParams::getTestFrequency(int id)
 int objParams::getNoofObjects()
 {
    return noof;
-}
-
-int objParams::getWdMode()
-{
-  return wd_mode;
 }
 
  std::string objParams::getSemaphoreParam(int id)

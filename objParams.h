@@ -14,7 +14,7 @@
 class objParams
 {
 public:
-    objParams() : noof(0), wd_mode(0)
+    objParams() : noof(0)
     { 
         std::chrono::system_clock::time_point controlTime, lastTest;
         while(1) {
@@ -39,12 +39,16 @@ public:
     std::vector<std::string> getRunArvg(int id);
     int getTestFrequency(int id);
     int getNoofObjects();
-    int objParams::getWdMode();
+    static int objParams::getWdMode()
+    {
+        return wd_mode;
+    }
 private:
     std::vector<std::string> objName, monitProcess, runProcess, relatedProcess, semaphore;
     std::vector<std::vector<std::string>> runArvg;
     std::vector<int> testFrequency;
-    int noof , wd_mode;
+    int noof;
+    static int wd_mode;
     nlohmann::json config;
 };
 
