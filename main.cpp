@@ -8,6 +8,7 @@
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+#define RELEASE_VERSION 0.1
 
 int main( int argc, char * argv[ ] )
 {
@@ -38,7 +39,7 @@ int main( int argc, char * argv[ ] )
         }
         Sleep(100);
         
-        if(params->getWdMode()) break;
+        if(objParams::getWdMode()) break;
     } while(true);
 
     return 0;
