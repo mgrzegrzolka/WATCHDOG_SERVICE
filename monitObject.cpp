@@ -9,7 +9,11 @@ monitObject::monitObject(objParams *pObjects, int p_id) : id(p_id), state(0), mo
     runArgv = pObjects->getRunArvg(p_id);
     testFrequency = pObjects->getTestFrequency(p_id);
     semaphore = pObjects->getSemaphore(p_id);
-    pObjects->getSemaphoreParam(p_id);
+    semaphoreParam = pObjects->getSemaphoreParam(p_id);
+    if (semaphoreParam.length() > 0) {
+        runArgv.push_back(semaphoreParam);
+        spdlog::get("wd_log")->info("[semaphoreParam] add arguments from semaphore");
+    }
     lastTest = std::chrono::system_clock::now();
 }
 
@@ -76,7 +80,10 @@ void monitObject::doAction()
     if(!monitProcessState && relatedProcessState && semaphoreState) {
         std::ifstream infile(runProcess);
         if(infile.good()) {
-            spdlog::get("wd_log")->info("[runProcess] File exist. Start process.");
+            spdlog::get("wd_log")->info("[runProcess] File exist. Start process. Argv:");
+            for (auto &a : runArgv) {
+                spdlog::get("wd_log")->info("{}", a);
+            }
             startupApp(runProcess.c_str(), runArgv);
         } else spdlog::get("wd_log")->error("[runProcess] File not exist!");
 

@@ -35,7 +35,7 @@ public:
         return wc;
     }
 private:
-    std::string objName, monitProcess, relatedProcess, runProcess, semaphore;
+    std::string objName, monitProcess, relatedProcess, runProcess, semaphore, semaphoreParam;
     std::vector<std::string> runArgv;
     int state, id, monitProcessState, relatedProcessState, semaphoreState;
     double testFrequency;

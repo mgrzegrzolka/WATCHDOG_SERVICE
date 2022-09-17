@@ -46,6 +46,7 @@ bool objParams::readConfig()
         spdlog::get("wd_log")->info("       [monitProcess][{}]", monitProcess.back());
         spdlog::get("wd_log")->info("       [relatedProcess][{}]", relatedProcess.back());
     }
+    wd_mode = config["wd_mode"];
     spdlog::get("wd_log")->info("Reading configurations completed -------------------------------- ");
     return true;
 }
@@ -89,23 +90,30 @@ int objParams::getTestFrequency(int id)
     return testFrequency[id];
 }
 
- int objParams::getNoofObjects()
- {
-    return noof;
- }
+int objParams::getNoofObjects()
+{
+   return noof;
+}
 
- std::vector<std::string> objParams::getSemaphoreParam(int id)
+int objParams::getWdMode()
+{
+  return wd_mode;
+}
+
+ std::string objParams::getSemaphoreParam(int id)
  {
-    std::vector<std::string> param;
-    std::string line;
+    std::string line ,argv;
     std::ifstream sFile(getSemaphore(id));
 
     if (sFile.is_open()) {
         while (getline(sFile, line)) {
             if(line.find("@argv:") != std::string::npos) {
-                //std::cout << "\n";
+                //for (auto &c : line) {
+                for (auto it = line.begin()+6; it != line.end(); it++) {
+                    argv.push_back(*it);
+                }
             }
         }
     }
-    return param;
+    return argv;
  }

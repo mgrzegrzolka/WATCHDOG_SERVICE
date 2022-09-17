@@ -37,6 +37,8 @@ int main( int argc, char * argv[ ] )
             }
         }
         Sleep(100);
+        
+        if(params->getWdMode()) break;
     } while(true);
 
     return 0;

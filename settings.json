@@ -5,7 +5,7 @@
     "RelatedProcess" : "blrlr",
     "RunProcess" : "app_path",
     "RunArvg" : [],
-    "Semaphore" : "simple.sem",
+    "Semaphore" : "",
     "TestFrequency" : 20
   }, {
     "ObjName" : "name_2",
@@ -13,8 +13,9 @@
     "RelatedProcess" : "Code.exe",
     "RunProcess" : "F:\\putty gen\\puttygen.exe",
     "RunArvg" : [],
-    "Semaphore" : "",
+    "Semaphore" : "simple.sem",
     "TestFrequency" : 10
-  }]
+  }],
+  "wd_mode": 0
 
 }
