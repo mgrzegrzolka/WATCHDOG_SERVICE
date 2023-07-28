@@ -22,6 +22,10 @@ public:
     bool checkAllConditions();
     bool isProcessRunning(std::string m_monitProcess);
     bool isSemaphoreExist();
+    bool isShutSemExist();
+    bool createDirectory(const std::string& path);
+    bool folderExists(const std::string& path);
+    bool isNextRunSemExist();
     bool startProcess();
     void doAction();
     void startupApp(LPCSTR lpApplicationName, std::vector<std::string> argv);
