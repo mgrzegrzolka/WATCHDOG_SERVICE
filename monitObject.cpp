@@ -1,4 +1,5 @@
 #include "monitObject.h"
+#include <cstdlib>
 
 monitObject::monitObject(objParams *pObjects, int p_id) : id(p_id), state(0), monitProcessState(0), relatedProcessState(0)
 {
@@ -25,6 +26,19 @@ bool monitObject::checkAllConditions()
     std::chrono::system_clock::time_point controlTime = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = controlTime - lastTest;
     if((elapsed_seconds.count() > testFrequency) || objParams::getWdMode()) {
+        if(isShutSemExist()) {
+            spdlog::get("wd_log")->info("[checkAllConditions] Found shut.sem. Exit(0).");
+            exit(0);
+        }
+        if(!isNextRunSemExist()) {
+            spdlog::get("wd_log")->info("[checkAllConditions] Missing next.sem."); 
+            int res = system("shutdown /r /f /t 2");
+            if(res == 0) {
+                spdlog::get("wd_log")->info("[checkAllConditions] Reboot next.sem."); 
+            } else {
+                spdlog::get("wd_log")->error("[checkAllConditions] Reboot !!! error -  next.sem."); 
+            }
+        }
         spdlog::get("wd_log")->info("[checkAllConditions] check each of conditions.");
         if(isProcessRunning(monitProcess)) monitProcessState = 1;
         spdlog::get("wd_log")->info("   [checkAllConditions][monitProcess][{}]", monitProcessState);
@@ -65,9 +79,39 @@ bool monitObject::isProcessRunning(std::string m_monitProcess)
     return exists;
 }
 
-bool monitObject::isSemaphoreExist() {
+bool monitObject::isSemaphoreExist() 
+{
     std::ifstream infile(semaphore);
     return (infile.good()) ? true : false;
+}
+
+bool monitObject::isShutSemExist() 
+{
+    std::ifstream infile("shut.sem");
+    return (infile.good()) ? true : false;
+}
+
+bool monitObject::createDirectory(const std::string& path) {
+    return CreateDirectory(path.c_str(), nullptr) != 0;
+}
+
+bool monitObject::folderExists(const std::string& path) {
+    DWORD fileAttributes = GetFileAttributes(path.c_str());
+    return fileAttributes != INVALID_FILE_ATTRIBUTES && (fileAttributes & FILE_ATTRIBUTE_DIRECTORY);
+}
+
+bool monitObject::isNextRunSemExist() 
+{
+    std::ifstream infile("c:/jp_status/next.sem");
+    if(!infile.good()) {
+        if(!folderExists("c:/jp_status")) {
+            createDirectory("c:/jp_status");
+        }
+        std::ofstream nextRun("c:/jp_status/next.sem");
+        nextRun << "1" << std::endl;
+        nextRun.close();
+        return false;
+    } else return true;
 }
 
 bool monitObject::startProcess()
@@ -105,6 +149,10 @@ void monitObject::startupApp(LPCSTR lpApplicationName, std::vector<std::string> 
     si.cb = sizeof(si);
     ZeroMemory(&pi, sizeof(pi));
 
+    // Modify startup flags to hide the window
+    si.dwFlags = STARTF_USESHOWWINDOW;
+    si.wShowWindow = SW_HIDE;
+
     // start the program up
     CreateProcessA
     (
@@ -113,7 +161,7 @@ void monitObject::startupApp(LPCSTR lpApplicationName, std::vector<std::string> 
         NULL,                   // Process handle not inheritable
         NULL,                   // Thread handle not inheritable
         FALSE,                  // Set handle inheritance to FALSE
-        NULL,     // Opens file in a separate console
+        CREATE_NO_WINDOW,     // Opens file in a separate console
         NULL,           // Use parent's environment block
         NULL,           // Use parent's starting directory 
         &si,            // Pointer to STARTUPINFO structure
