@@ -6,7 +6,8 @@
     "RunProcess" : "app_path",
     "RunArvg" : [],
     "Semaphore" : "",
-    "TestFrequency" : 20
+    "TestFrequency" : 20,
+    "FirstRunAction" : [{ "sem" : "next.sem", "command" : "dir"}, { "sem" : "next2.sem", "command" : "dir"}]
   }, {
     "ObjName" : "name_2",
     "MonitProcess" : "Code2.exe",

@@ -8,6 +8,7 @@ monitObject::monitObject(objParams *pObjects, int p_id) : id(p_id), state(0), mo
     relatedProcess = pObjects->getRelatedProcess(p_id);
     runProcess = pObjects->getRunProcess(p_id);
     runArgv = pObjects->getRunArvg(p_id);
+    firstRun = pObjects->getFirstRun(p_id);
     testFrequency = pObjects->getTestFrequency(p_id);
     semaphore = pObjects->getSemaphore(p_id);
     semaphoreParam = pObjects->getSemaphoreParam(p_id);
@@ -30,13 +31,15 @@ bool monitObject::checkAllConditions()
             spdlog::get("wd_log")->info("[checkAllConditions] Found shut.sem. Exit(0).");
             exit(0);
         }
-        if(!isNextRunSemExist()) {
-            spdlog::get("wd_log")->info("[checkAllConditions] Missing next.sem."); 
-            int res = system("shutdown /r /f /t 2");
-            if(res == 0) {
-                spdlog::get("wd_log")->info("[checkAllConditions] Reboot next.sem."); 
-            } else {
-                spdlog::get("wd_log")->error("[checkAllConditions] Reboot !!! error -  next.sem."); 
+        for (auto &a : firstRun) {
+            if(!isNextRunSemExist(a.first)) {
+                spdlog::get("wd_log")->info("[checkAllConditions] Missing {}",  a.first); 
+                int res = system(a.second.c_str());
+                if(res == 0) {
+                    spdlog::get("wd_log")->info("[checkAllConditions] Reboot {}", a.first); 
+                } else {
+                    spdlog::get("wd_log")->error("[checkAllConditions] Reboot !!! error -  {}", a.first); 
+                }
             }
         }
         spdlog::get("wd_log")->info("[checkAllConditions] check each of conditions.");
@@ -100,14 +103,15 @@ bool monitObject::folderExists(const std::string& path) {
     return fileAttributes != INVALID_FILE_ATTRIBUTES && (fileAttributes & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-bool monitObject::isNextRunSemExist() 
+bool monitObject::isNextRunSemExist(std::string sem) 
 {
-    std::ifstream infile("c:/jp_status/next.sem");
+    std::string path_sem = "c:/jp_status/" + sem;
+    std::ifstream infile(path_sem);
     if(!infile.good()) {
         if(!folderExists("c:/jp_status")) {
             createDirectory("c:/jp_status");
         }
-        std::ofstream nextRun("c:/jp_status/next.sem");
+        std::ofstream nextRun(path_sem);
         nextRun << "1" << std::endl;
         nextRun.close();
         return false;

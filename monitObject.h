@@ -25,7 +25,7 @@ public:
     bool isShutSemExist();
     bool createDirectory(const std::string& path);
     bool folderExists(const std::string& path);
-    bool isNextRunSemExist();
+    bool isNextRunSemExist(std::string sem);
     bool startProcess();
     void doAction();
     void startupApp(LPCSTR lpApplicationName, std::vector<std::string> argv);
@@ -39,8 +39,9 @@ public:
         return wc;
     }
 private:
-    std::string objName, monitProcess, relatedProcess, runProcess, semaphore, semaphoreParam;
+    std::string objName, monitProcess, relatedProcess, runProcess, semaphore, semaphoreParam, firstRunSem;
     std::vector<std::string> runArgv;
+    std::map<std::string, std::string> firstRun;
     int state, id, monitProcessState, relatedProcessState, semaphoreState;
     double testFrequency;
     std::chrono::system_clock::time_point lastTest;

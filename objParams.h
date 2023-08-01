@@ -37,6 +37,7 @@ public:
     std::string getSemaphoreParam(int id);
     std::string getRunProcess(int id);
     std::vector<std::string> getRunArvg(int id);
+    std::map<std::string, std::string> getFirstRun(int id);
     int getTestFrequency(int id);
     int getNoofObjects();
     static int objParams::getWdMode()
@@ -46,6 +47,7 @@ public:
 private:
     std::vector<std::string> objName, monitProcess, runProcess, relatedProcess, semaphore;
     std::vector<std::vector<std::string>> runArvg;
+    std::vector<std::map<std::string, std::string>> firstRun;
     std::vector<int> testFrequency;
     int noof;
     static int wd_mode;

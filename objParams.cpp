@@ -29,9 +29,15 @@ bool objParams::readConfig()
         runProcess.push_back(el["RunProcess"].get<std::string>());
         nlohmann::json arvg_data = el["RunArvg"];
         std::vector<std::string> v_arvg;
+        std::map<std::string, std::string> firsR;
         for(auto &a : arvg_data) {
             v_arvg.push_back(a);
         }
+        nlohmann::json firsRun_data = el["FirstRunAction"];
+        for(auto &a : firsRun_data) {
+            firsR.insert(std::make_pair(a["sem"].get<std::string>(), a["command"].get<std::string>()));
+        }
+        firstRun.push_back(firsR);
         runArvg.push_back(v_arvg);
         semaphore.push_back(el["Semaphore"].get<std::string>());
         testFrequency.push_back(el["TestFrequency"].get<int>());
@@ -80,6 +86,11 @@ std::string objParams::getRunProcess(int id)
 std::vector<std::string> objParams::getRunArvg(int id)
 {
     return runArvg[id];
+}
+
+std::map<std::string, std::string> objParams::getFirstRun(int id)
+{
+    return firstRun[id];
 }
 
 std::string objParams::getSemaphore(int id)

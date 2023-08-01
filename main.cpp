@@ -8,7 +8,7 @@
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#define RELEASE_VERSION 0.1
+#define RELEASE_VERSION 0.4
 
 int main( int argc, char * argv[ ] )
 {
